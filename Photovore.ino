@@ -1,8 +1,4 @@
-/**
- * Take Your Children To Work Day 2014 @ Google.NYC
- * @author("Raymond Blum" <raymond@insanegiantrobots.com>)
- * targeted for an ATTiny85 @ 1 Mhz but should work on any Arduino compatible controller
- *
+/***
  * Copyright (c) 2014 by Raymond Blum
  * This software is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
