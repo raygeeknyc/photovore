@@ -6,4 +6,4 @@ This is the sketch that drives a small photovore,
 = Details =
 
 Source is in this repository
-Photos and assembly instructions are documented here[http://insanegiantrobots.com/photovore]
+Photos and assembly instructions are documented [http://insanegiantrobots.com/photovore]
