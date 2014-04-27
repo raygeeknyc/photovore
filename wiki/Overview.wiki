@@ -28,5 +28,5 @@ Photos and assembly instructions are documented at [http://insanegiantrobots.com
 = And to prepare, you'll need =
    * Glue to hold servo horns to acrylic
    * Strong double sided sticky tape (I used  0.5" 3M VHB)
-   * A programmer to burn sketches onto the AT Tiny.  [http://insanegiantrobots.com/photovore#burning mine] is a Mintduino and a breadboard with a ZIF socket, I keep a 5V Trinket for quick testing of sketches before I put them onto the bare Tinys.
+   * A programmer to burn sketches onto the AT Tiny.  [http://insanegiantrobots.com/photovore#burning Mine] is a Mintduino and a breadboard with a ZIF socket, I keep a 5V Trinket for quick testing of sketches before I put them onto the bare Tinys.
    * A computer with the Arduino IDE modified to include AT Tiny 85 support
