@@ -8,3 +8,21 @@ This is the sketch that drives a small photovore,
 Source is in this repository
 
 Photos and assembly instructions are documented at [http://insanegiantrobots.com/photovore]
+
+= Parts =
+* 1 Mini breadboard
+* 2 Continuous rotation micro servos (I got mine from robotshop.com)
+* 2 CDS Photosensors
+* 1 9V Battery Pack, modified to terminate in a breadboard-friendly 2 pin connector
+* 1 AT Tiny 85 microcontroller
+* 2 Resistors (the same value, between 1KOhm and 10KOhm)
+* 1 LM7805 5 volt voltage regulator
+* 1 breadboard friendly piezo speaker element
+* 2 extra long 3 pin headers
+* 9 short jumper wires
+* 7 medium (3") jumper wires
+* Strong double sided sticky tape (I used  0.5" 3M VHB)
+* 9V battery
+* Glue to hold servo horns to acrylic
+* 2 1.5" diameter wheels, I laser cut mine from 1/8" acrylic, attached to servo horns
+* 2 0.3"x3" legs with a rounded end - I cut mine from 1/8" acrylic
