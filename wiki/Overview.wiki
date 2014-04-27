@@ -25,7 +25,7 @@ Photos and assembly instructions are documented at [http://insanegiantrobots.com
    * 2 1.5" diameter wheels, I laser cut mine from 1/8" acrylic, attached to servo horns
    * 2 0.3"x3" legs with a rounded end - I cut mine from 1/8" acrylic
 
-And to prepare, you'll need
+= And to prepare, you'll need =
    * Glue to hold servo horns to acrylic
    * Strong double sided sticky tape (I used  0.5" 3M VHB)
    * A programmer to burn sketches onto the AT Tiny (I used a Mintduino and a breadboard with a ZIF socket, see a picture at  [http://insanegiantrobots.com/photovore]
