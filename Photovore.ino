@@ -1,15 +1,28 @@
 /***
- * Copyright (c) 2014 by Raymond Blum
+ * Copyright (c) 2014 by Raymond Blum <raymond@insanegiantrobots.com>
+ *
  * This software is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ *
+
+
+
+
+
+
+
+
+
+
+
+ version 2.1 of the License, or (at your option) any later version.
  */
-int sensorlPin = 1;
-int sensorrPin = 3;
-int speakerPin = 4;
-int servoLPin = 1;
-int servoRPin = 0;
+#define sensorLPin 1
+#define sensorRPin 3
+#define speakerPin 4
+#define servoLPin 1
+#define servoRPin 0
 
 // Define these based on your servos and controller, the values to cause your servos 
 // to spin in opposite directions at approx the same speed.
@@ -25,10 +38,10 @@ int servoRPin = 0;
 #define SERVO_L_STOP 0
 #define SERVO_R_STOP 0
 
-#define SENSOR_DELTA_THRESHOLD_PCT 25
-#define SENSOR_DELTA_THRESHOLD 40
+#define SENSOR_DELTA_THRESHOLD_PCT 20
+#define SENSOR_DELTA_THRESHOLD 30
 
-#define HIGHEST_THRESHOLD 4
+#define HIGHEST_THRESHOLD SENSOR_DELTA_THRESHOLD
 
 #define SENSOR_SAMPLES 5
 
@@ -58,20 +71,23 @@ int sensor_nornalization_delta;
 unsigned long stopped_until;
 
 void setup() {
-  beep(speakerPin, 500, 333);
-  pinMode(speakerPin, OUTPUT);
   pinMode(servoLPin, OUTPUT);
   pinMode(servoRPin, OUTPUT);
+  pinMode(speakerPin, OUTPUT);
   analogWrite(servoLPin, SERVO_L_STOP);
   analogWrite(servoRPin, SERVO_R_STOP);
   sensor_nornalization_delta = 0;
   callibrateSensors();
 }
 
+void recordDirection(int dir) {
+  last_dir = current_dir;
+  current_dir = dir;
+}
+
 int smooth(int array[], int len) {
   /**
-  Take the average of the array without the highest and lowest
-  values
+  Return the average of the array without the highest and lowest values.
   **/
   int low = MAX_SENSOR_READING;
   int high = -1;
@@ -113,19 +129,20 @@ void readSensors() {
   The multiple reads and delay are recommended to allow the shared ADC to properly
   read multiple pins in succession.
   ***/
-  int s_array[SENSOR_SAMPLES];
+  int samples[SENSOR_SAMPLES];
   
-  analogRead(sensorlPin);delay(10);  
+  analogRead(sensorLPin);delay(10);  
   for (int s=0; s<SENSOR_SAMPLES; s++) {
-    s_array[s] = analogRead(sensorlPin);
+    samples[s] = analogRead(sensorLPin);
   }
-  sl = smooth(s_array, SENSOR_SAMPLES);
-  analogRead(sensorrPin);delay(10);
-  sr=MAX_SENSOR_READING;
+  sl = smooth(samples, SENSOR_SAMPLES);
+
+  analogRead(sensorRPin);delay(10);
   for (int s=0; s<SENSOR_SAMPLES; s++) {
-    s_array[s] = analogRead(sensorrPin);
+    samples[s] = analogRead(sensorRPin);
   }
-  sr = smooth(s_array, SENSOR_SAMPLES);
+  sr = smooth(samples, SENSOR_SAMPLES);
+
   s_max = max(sl,sr);
   s_delta = (sl - sensor_nornalization_delta) - sr;
   s_change_pct = (float)abs(s_delta) / s_max * 100;
@@ -142,13 +159,16 @@ void loop() {
       drive(DIR_FWD);
     } else {
       drive(DIR_STOP);
+      if (last_dir == DIR_FWD) {
+        burp();
+      }
     }
     s_highest = max(s_max, s_highest);
   }
 }
 
 void drive(int direction) {
-  current_dir = direction;
+  recordDirection(direction);
   switch (direction) {
     case DIR_LEFT:
       analogWrite(servoLPin, SERVO_L_STOP);
@@ -170,7 +190,7 @@ void drive(int direction) {
 }
 
 void spin(int direction) {
-  current_dir = direction;
+  recordDirection(direction);
   switch (direction) {
     case DIR_LEFT:
       analogWrite(servoLPin, SERVO_L_BWD);
@@ -187,22 +207,22 @@ void spin(int direction) {
   }
 }
 
+// The sound producing function for chips without tone() support
+void beep (unsigned char pin, int frequencyInHertz, long timeInMilliseconds) {
+  // from http://web.media.mit.edu/~leah/LilyPad/07_sound_code.html
+  int x;	 
+  long delayAmount = (long)(1000000/frequencyInHertz);
+  long loopTime = (long)((timeInMilliseconds*1000)/(delayAmount*2));
+  for (x=0;x<loopTime;x++) {	 
+    digitalWrite(pin,HIGH);
+    delayMicroseconds(delayAmount);
+    digitalWrite(pin,LOW);
+    delayMicroseconds(delayAmount);
+  }	 
+}
+
+// emit a fairly rude noise
 void burp() {
   beep(speakerPin, 125, 50);
   beep(speakerPin, 250, 75);
-}
-
-// the sound producing function
-void beep (unsigned char speakerPin, int frequencyInHertz, long timeInMilliseconds)
-{	 // http://web.media.mit.edu/~leah/LilyPad/07_sound_code.html
-          int x;	 
-          long delayAmount = (long)(1000000/frequencyInHertz);
-          long loopTime = (long)((timeInMilliseconds*1000)/(delayAmount*2));
-          for (x=0;x<loopTime;x++)	 
-          {	 
-              digitalWrite(speakerPin,HIGH);
-              delayMicroseconds(delayAmount);
-              digitalWrite(speakerPin,LOW);
-              delayMicroseconds(delayAmount);
-          }	 
 }
