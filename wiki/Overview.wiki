@@ -22,11 +22,11 @@ Photos and assembly instructions are documented at [http://insanegiantrobots.com
    * 9 short jumper wires
    * 7 medium (3") jumper wires
    * 9V battery
-   * 2 1.5" diameter wheels, I laser cut mine from 1/8" acrylic, attached to servo horns
-   * 2 0.3"x3" legs with a rounded end - I cut mine from 1/8" acrylic
+   * 2 1.5" diameter wheels, I laser cut mine from 1/8" acrylic, glued to servo horns
+   * 2 0.3"x3" legs with a rounded end - I laser cut mine from 1/8" acrylic
 
 = And to prepare, you'll need =
-   * Glue to hold servo horns to acrylic
+   * Glue to hold servo horns to acrylic. Crazy Glue never fails to disappoint, I used "Loctite Go2 Glue" but a hot glue gun would probably work.
    * Strong double sided sticky tape (I used  0.5" 3M VHB)
    * A programmer to burn sketches onto the AT Tiny.  [http://insanegiantrobots.com/photovore#burning Mine] is a Mintduino and a breadboard with a ZIF socket, I keep a 5V Trinket for quick testing of sketches before I put them onto the bare Tinys.
    * A computer with the Arduino IDE modified to include AT Tiny 85 support
