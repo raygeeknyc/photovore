@@ -50,7 +50,6 @@ int s_max, s_highest;
 int s_delta, s_change_pct;
 int current_dir, last_dir;
 int sensor_nornalization_delta;
-unsigned long stopped_until;
 
 void setup() {
   pinMode(servoLPin, OUTPUT);
@@ -135,7 +134,6 @@ void loop() {
 
   if ((abs(s_delta) > SENSOR_DELTA_THRESHOLD) && (s_change_pct > SENSOR_DELTA_THRESHOLD_PCT)) {
     drive((sl < sr)? DIR_RIGHT:DIR_LEFT);
-    stopped_until = 0;
   } else {
     if (s_max < (s_highest - HIGHEST_THRESHOLD)) {
       drive(DIR_FWD);
