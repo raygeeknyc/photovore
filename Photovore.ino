@@ -38,12 +38,6 @@
 // How long to spin while callibrating the sensor pair
 #define DUR_CALLIBRATION 1000
 
-// How long to pause when sensors are equal
-#define DUR_FWD 2500
-
-// How long to spin when sensors are equal
-#define DUR_SPIN 500
-
 // How long to pause between steps while spinning to normalize the sensor pair
 #define SPIN_STEP_DELAY_MS 15
 #define DIR_STOP 0
