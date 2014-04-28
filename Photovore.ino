@@ -4,19 +4,7 @@
  * This software is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- *
-
-
-
-
-
-
-
-
-
-
-
- version 2.1 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  */
 #define sensorLPin 1
 #define sensorRPin 3
@@ -107,9 +95,9 @@ void callibrateSensors() {
      a random direction and use that as a sensor normalizing value.
    **/
   int min_delta = MAX_SENSOR_READING;
-  float dir = random(2);
+  float dir = random(3);
   unsigned long callibration_until = millis() + DUR_CALLIBRATION;
-  int spin_dir = (dir > 1.5)?DIR_LEFT:DIR_RIGHT;
+  int spin_dir = (dir > 1.0)?DIR_LEFT:DIR_RIGHT;
   while (millis() < callibration_until) {
     spin(spin_dir);
     delay(SPIN_STEP_DELAY_MS);
