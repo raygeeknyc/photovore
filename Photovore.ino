@@ -151,8 +151,8 @@ void loop() {
         burp();
       }
     }
-    s_highest = max(s_max, s_highest);
   }
+  s_highest = max(s_max, s_highest);
 }
 
 void drive(int direction) {
@@ -209,7 +209,7 @@ void beep (unsigned char pin, int frequencyInHertz, long timeInMilliseconds) {
   }	 
 }
 
-// emit a fairly rude noise
+// Emit a fairly rude noise
 void burp() {
   beep(speakerPin, 125, 50);
   beep(speakerPin, 250, 75);
