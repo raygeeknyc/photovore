@@ -49,7 +49,7 @@ int sr, sl;
 int s_max, s_highest;
 int s_delta, s_change_pct;
 int current_dir, last_dir;
-int sensor_nornalization_delta;
+int sensor_normalization_delta;
 
 void setup() {
   pinMode(servoLPin, OUTPUT);
@@ -57,7 +57,7 @@ void setup() {
   pinMode(speakerPin, OUTPUT);
   analogWrite(servoLPin, SERVO_L_STOP);
   analogWrite(servoRPin, SERVO_R_STOP);
-  sensor_nornalization_delta = 0;
+  sensor_normalization_delta = 0;
   callibrateSensors();
 }
 
@@ -102,7 +102,7 @@ void callibrateSensors() {
     }
   }
   drive(DIR_STOP);
-  sensor_nornalization_delta = min_delta;
+  sensor_norMalization_delta = min_delta;
 }
 
 void readSensors() {
@@ -125,7 +125,7 @@ void readSensors() {
   sr = smooth(samples, SENSOR_SAMPLES);
 
   s_max = max(sl,sr);
-  s_delta = (sl - sensor_nornalization_delta) - sr;
+  s_delta = (sl - sensor_normalization_delta) - sr;
   s_change_pct = (float)abs(s_delta) / s_max * 100;
 }
 
