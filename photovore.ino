@@ -102,7 +102,7 @@ void callibrateSensors() {
     }
   }
   drive(DIR_STOP);
-  sensor_norMalization_delta = min_delta;
+  sensor_normalization_delta = min_delta;
 }
 
 void readSensors() {
