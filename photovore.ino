@@ -1,21 +1,24 @@
 /***
- * Copyright (c) 2014 by Raymond Blum <raymond@insanegiantrobots.com>
+ * Copyright (c) 2020 by Raymond Blum <raymond@insanegiantrobots.com>
  *
  * This software is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  */
-#define sensorLPin 1
-#define sensorRPin 3
+#define sensorLPin 0
+#define sensorRPin 1
 #define speakerPin 4
-#define servoLPin 1
-#define servoRPin 0
+#define L_SERVO_PIN 2
+#define R_SERVO_PIN 3
+
+#include <Servo.h>
+Servo LEFT_SERVO, RIGHT_SERVO;
 
 // Define these based on your servos and controller, the values to cause your servos 
 // to spin in opposite directions at approx the same speed.
-#define CW 30
-#define CCW 10
+#define CW 150
+#define CCW 30
 
 #define SERVO_L_FWD CW
 #define SERVO_R_FWD CCW
@@ -52,11 +55,12 @@ int current_dir, last_dir;
 int sensor_normalization_delta;
 
 void setup() {
-  pinMode(servoLPin, OUTPUT);
-  pinMode(servoRPin, OUTPUT);
+  pinMode(L_SERVO_PIN, OUTPUT);
+  pinMode(R_SERVO_PIN, OUTPUT);
+  LEFT_SERVO.attach(L_SERVO_PIN);
+  RIGHT_SERVO.attach(R_SERVO_PIN);
+
   pinMode(speakerPin, OUTPUT);
-  analogWrite(servoLPin, SERVO_L_STOP);
-  analogWrite(servoRPin, SERVO_R_STOP);
   sensor_normalization_delta = 0;
   callibrateSensors();
 }
@@ -151,20 +155,20 @@ void drive(int direction) {
   recordDirection(direction);
   switch (direction) {
     case DIR_LEFT:
-      analogWrite(servoLPin, SERVO_L_STOP);
-      analogWrite(servoRPin, SERVO_R_FWD);
+      LEFT_SERVO.write(SERVO_L_STOP);
+      RIGHT_SERVO.write(SERVO_R_FWD);
       break;
     case DIR_RIGHT:
-      analogWrite(servoLPin, SERVO_L_FWD);
-      analogWrite(servoRPin, SERVO_R_STOP);
+      LEFT_SERVO.write(SERVO_L_FWD);
+      RIGHT_SERVO.write(SERVO_R_STOP);
       break;
     case DIR_FWD:
-      analogWrite(servoLPin, SERVO_L_FWD);
-      analogWrite(servoRPin, SERVO_R_FWD);
+      LEFT_SERVO.write(SERVO_L_FWD);
+      RIGHT_SERVO.write(SERVO_R_FWD);
       break;
     case DIR_STOP:
-      analogWrite(servoLPin, SERVO_L_STOP);
-      analogWrite(servoRPin, SERVO_R_STOP);
+      LEFT_SERVO.write(SERVO_L_STOP);
+      RIGHT_SERVO.write(SERVO_R_STOP);
       break;
   }
 }
@@ -173,36 +177,23 @@ void spin(int direction) {
   recordDirection(direction);
   switch (direction) {
     case DIR_LEFT:
-      analogWrite(servoLPin, SERVO_L_BWD);
-      analogWrite(servoRPin, SERVO_R_FWD);
+      LEFT_SERVO.write(SERVO_L_BWD);
+      RIGHT_SERVO.write(SERVO_R_FWD);
       break;
     case DIR_RIGHT:
-      analogWrite(servoLPin, SERVO_L_FWD);
-      analogWrite(servoRPin, SERVO_R_BWD);
+      LEFT_SERVO.write(SERVO_L_FWD);
+      RIGHT_SERVO.write(SERVO_R_BWD);
       break;
     case DIR_STOP:
-      analogWrite(servoLPin, SERVO_L_STOP);
-      analogWrite(servoRPin, SERVO_R_STOP);
+      LEFT_SERVO.write(SERVO_L_STOP);
+      RIGHT_SERVO.write(SERVO_R_STOP);
       break;
   }
 }
 
-// The sound producing function for chips without tone() support
-void beep (unsigned char pin, int frequencyInHertz, long timeInMilliseconds) {
-  // from http://web.media.mit.edu/~leah/LilyPad/07_sound_code.html
-  int x;	 
-  long delayAmount = (long)(1000000/frequencyInHertz);
-  long loopTime = (long)((timeInMilliseconds*1000)/(delayAmount*2));
-  for (x=0;x<loopTime;x++) {	 
-    digitalWrite(pin,HIGH);
-    delayMicroseconds(delayAmount);
-    digitalWrite(pin,LOW);
-    delayMicroseconds(delayAmount);
-  }	 
-}
-
 // Emit a fairly rude noise
 void burp() {
-  beep(speakerPin, 125, 50);
-  beep(speakerPin, 250, 75);
+  tone(speakerPin, 250, 100);
+  tone(speakerPin, 125, 75);
+  tone(speakerPin, 350, 100);
 }
