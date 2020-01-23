@@ -1,2 +1,2 @@
 # photovore
-See https://www.insanegiantrobots.com/photovore
+See http://www.insanegiantrobots.com/photovore/
