@@ -6,8 +6,8 @@
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  */
-#define sensorLPin 0
-#define sensorRPin 1
+#define sensorLPin A0
+#define sensorRPin A2
 #define speakerPin 4
 #define L_SERVO_PIN 2
 #define R_SERVO_PIN 3
