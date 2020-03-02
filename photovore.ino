@@ -20,14 +20,18 @@ Servo LEFT_SERVO, RIGHT_SERVO;
 #define CW 85
 #define CCW 105
 
+// Define these based on your servos and controller, the values to cause your servos 
+// to come to a full stop.
+#define SERVO_STOP 92
+
 #define SERVO_L_FWD CW
 #define SERVO_R_FWD CCW
 
 #define SERVO_L_BWD CCW
 #define SERVO_R_BWD CW
 
-#define SERVO_L_STOP 92
-#define SERVO_R_STOP 92
+#define SERVO_L_STOP SERVO_STOP
+#define SERVO_R_STOP SERVO_STOP
 
 #define SENSOR_DELTA_THRESHOLD_PCT 20
 #define SENSOR_DELTA_THRESHOLD 30
