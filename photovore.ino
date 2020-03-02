@@ -6,11 +6,11 @@
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  */
-#define sensorLPin A0
+#define sensorLPin A1
 #define sensorRPin A2
-#define speakerPin 4
-#define L_SERVO_PIN 2
-#define R_SERVO_PIN 3
+#define speakerPin 1
+#define L_SERVO_PIN 3
+#define R_SERVO_PIN 4
 
 #include <Servo.h>
 Servo LEFT_SERVO, RIGHT_SERVO;
