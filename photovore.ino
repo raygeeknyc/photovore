@@ -8,17 +8,22 @@
  */
 #define sensorLPin A0
 #define sensorRPin A2
-#define speakerPin 4
+#define speakerPin 3
 #define L_SERVO_PIN 2
-#define R_SERVO_PIN 3
+#define R_SERVO_PIN 4
 
 #include <Servo.h>
 Servo LEFT_SERVO, RIGHT_SERVO;
 
+#include <Adafruit_DotStar.h>
+Adafruit_DotStar strip = Adafruit_DotStar(1, INTERNAL_DS_DATA, INTERNAL_DS_CLK, DOTSTAR_BGR);
+
 // Define these based on your servos and controller, the values to cause your servos 
-// to spin in opposite directions at approx the same speed.
-#define CW 85
-#define CCW 105
+// to come to a full stop.
+#define SERVO_STOP 92
+#define SERVO_DELTA 10
+#define CW SERVO_STOP-SERVO_DELTA
+#define CCW SERVO_STOP+SERVO_DELTA 
 
 #define SERVO_L_FWD CW
 #define SERVO_R_FWD CCW
@@ -26,8 +31,8 @@ Servo LEFT_SERVO, RIGHT_SERVO;
 #define SERVO_L_BWD CCW
 #define SERVO_R_BWD CW
 
-#define SERVO_L_STOP 92
-#define SERVO_R_STOP 92
+#define SERVO_L_STOP SERVO_STOP
+#define SERVO_R_STOP SERVO_STOP
 
 #define SENSOR_DELTA_THRESHOLD_PCT 20
 #define SENSOR_DELTA_THRESHOLD 30
@@ -54,13 +59,49 @@ int s_delta, s_change_pct;
 int current_dir, last_dir;
 int sensor_normalization_delta;
 
+void testLED() {
+  strip.setPixelColor(0, 0, 0, 0);  //off
+  strip.show();
+  delay(1500);
+  strip.setPixelColor(0, 0, 127, 127);  //cyan
+  strip.show();
+  delay(1000);
+  strip.setPixelColor(0, 127, 127, 0);  //yellow
+  strip.show();
+  delay(1000);
+  strip.setPixelColor(0, 127, 0, 127);  //magenta
+  strip.show();
+  delay(1000);
+  strip.setPixelColor(0, 0, 0, 0);  //off
+  strip.show();
+  delay(2000);
+}
+
+void testServos() {
+  RIGHT_SERVO.write(SERVO_R_STOP+SERVO_DELTA);
+  LEFT_SERVO.write(SERVO_L_STOP+SERVO_DELTA);
+  delay(1000);
+
+  RIGHT_SERVO.write(SERVO_R_STOP-SERVO_DELTA);
+  LEFT_SERVO.write(SERVO_L_STOP-SERVO_DELTA);
+  delay(1000);
+
+  RIGHT_SERVO.write(SERVO_R_STOP);
+  LEFT_SERVO.write(SERVO_L_STOP);
+  delay(1000);
+}
+
 void setup() {
-  pinMode(L_SERVO_PIN, OUTPUT);
-  pinMode(R_SERVO_PIN, OUTPUT);
-  LEFT_SERVO.attach(L_SERVO_PIN);
-  RIGHT_SERVO.attach(R_SERVO_PIN);
+  strip.begin();
+  testLED();
 
   pinMode(speakerPin, OUTPUT);
+  burp();
+  
+  RIGHT_SERVO.attach(4);
+  LEFT_SERVO.attach(2);
+  testServos();
+  
   sensor_normalization_delta = 0;
   callibrateSensors();
 }
