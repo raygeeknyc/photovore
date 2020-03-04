@@ -9,6 +9,8 @@
 #define sensorLPin A0
 #define sensorRPin A2
 #define speakerPin 3
+
+// Don't put these on 2 PWM pins that share the same timer
 #define L_SERVO_PIN 2
 #define R_SERVO_PIN 4
 
@@ -48,6 +50,7 @@ Adafruit_DotStar strip = Adafruit_DotStar(1, INTERNAL_DS_DATA, INTERNAL_DS_CLK, 
 
 // How long to pause between steps while spinning to normalize the sensor pair
 #define SPIN_STEP_DELAY_MS 15
+
 #define DIR_STOP 0
 #define DIR_RIGHT 1
 #define DIR_LEFT 2
@@ -59,22 +62,22 @@ int s_delta, s_change_pct;
 int current_dir, last_dir;
 int sensor_normalization_delta;
 
-void testLED() {
+void testRGBLED() {
   strip.setPixelColor(0, 0, 0, 0);  //off
   strip.show();
-  delay(1500);
+  delay(1000);
   strip.setPixelColor(0, 0, 127, 127);  //cyan
   strip.show();
-  delay(1000);
+  delay(500);
   strip.setPixelColor(0, 127, 127, 0);  //yellow
   strip.show();
-  delay(1000);
+  delay(500);
   strip.setPixelColor(0, 127, 0, 127);  //magenta
   strip.show();
-  delay(1000);
+  delay(500);
   strip.setPixelColor(0, 0, 0, 0);  //off
   strip.show();
-  delay(2000);
+  delay(1000);
 }
 
 void testServos() {
@@ -93,13 +96,13 @@ void testServos() {
 
 void setup() {
   strip.begin();
-  testLED();
+  testRGBLED();
 
   pinMode(speakerPin, OUTPUT);
   burp();
   
-  RIGHT_SERVO.attach(4);
-  LEFT_SERVO.attach(2);
+  RIGHT_SERVO.attach(R_SERVO_PIN);
+  LEFT_SERVO.attach(L_SERVO_PIN);
   testServos();
   
   sensor_normalization_delta = 0;
@@ -174,18 +177,43 @@ void readSensors() {
   s_change_pct = (float)abs(s_delta) / s_max * 100;
 }
 
+void showHappyLED() {
+  strip.setPixelColor(0, 127, 127, 127);  // light gray / pale white
+  strip.show();
+}
+
+void showSadLED() {
+  strip.setPixelColor(0, 127, 0, 0);  // pale red
+  strip.show();
+}
+
+void showWaitingLED() {
+  strip.setPixelColor(0, 0, 0, 0);  // off
+  strip.show();
+}
+
+void showSeekingLED() {
+  strip.setPixelColor(0, 20, 20, 127);  // light blue
+  strip.show();
+}
+
 void loop() {  
   readSensors();
 
   if ((abs(s_delta) > SENSOR_DELTA_THRESHOLD) && (s_change_pct > SENSOR_DELTA_THRESHOLD_PCT)) {
     drive((sl < sr)? DIR_RIGHT:DIR_LEFT);
+    showSeekingLED();
   } else {
     if (s_max < (s_highest - HIGHEST_THRESHOLD)) {
       drive(DIR_FWD);
+      showSadLED();
     } else {
       drive(DIR_STOP);
       if (last_dir == DIR_FWD) {
         burp();
+        showHappyLED();
+      } else {
+        showWaitingLED();
       }
     }
   }
@@ -214,6 +242,15 @@ void drive(int direction) {
   }
 }
 
+// Emit a fairly rude noise
+void burp() {
+  tone(speakerPin, 250, 100);
+  delay(100);
+  tone(speakerPin, 125, 75);
+  delay(75);
+  tone(speakerPin, 350, 100);
+}
+
 void spin(int direction) {
   recordDirection(direction);
   switch (direction) {
@@ -230,11 +267,4 @@ void spin(int direction) {
       RIGHT_SERVO.write(SERVO_R_STOP);
       break;
   }
-}
-
-// Emit a fairly rude noise
-void burp() {
-  tone(speakerPin, 250, 100);
-  tone(speakerPin, 125, 75);
-  tone(speakerPin, 350, 100);
 }
