@@ -6,8 +6,8 @@
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  */
-#define sensorLPin A0
-#define sensorRPin A2
+#define sensorLPin A0  // AKA Digital pin 1
+#define sensorRPin A2  // AKA Digital pin 0
 #define speakerPin 3
 
 // Don't put these on 2 PWM pins that share the same timer
@@ -20,10 +20,14 @@ Servo LEFT_SERVO, RIGHT_SERVO;
 #include <Adafruit_DotStar.h>
 Adafruit_DotStar strip = Adafruit_DotStar(1, INTERNAL_DS_DATA, INTERNAL_DS_CLK, DOTSTAR_BGR);
 
-// Define these based on your servos and controller, the values to cause your servos 
+// Define these based on your servos and controller, the value to cause your servos 
 // to come to a full stop.
 #define SERVO_STOP 92
+
 #define SERVO_DELTA 10
+
+// If the CW and CCW speeds are not close to the same, you will have to change these to values that
+// cause the servos to rotate in opposite directions at the same speed
 #define CW SERVO_STOP-SERVO_DELTA
 #define CCW SERVO_STOP+SERVO_DELTA 
 
