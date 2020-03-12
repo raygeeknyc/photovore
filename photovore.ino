@@ -40,7 +40,7 @@ Adafruit_DotStar strip = Adafruit_DotStar(1, INTERNAL_DS_DATA, INTERNAL_DS_CLK, 
 #define SERVO_L_STOP SERVO_STOP
 #define SERVO_R_STOP SERVO_STOP
 
-#define SENSOR_DELTA_THRESHOLD 30
+#define SENSOR_DELTA_THRESHOLD_PCT 30.0  // Must be a float
 
 #define SENSOR_SAMPLES 5
 
@@ -57,12 +57,13 @@ Adafruit_DotStar strip = Adafruit_DotStar(1, INTERNAL_DS_DATA, INTERNAL_DS_CLK, 
 #define DIR_LEFT 2
 #define DIR_FWD 3
 
-int sr, sl;
+int sensor_right, sensor_left;
 int s_max, s_highest;
 int s_min, s_lowest;
 int s_delta;
 int current_dir, last_dir;
 int sensor_normalization_delta;
+int sensor_delta_threshold;
 
 void testRGBLED() {
   strip.setPixelColor(0, 0, 0, 0);  //off
@@ -133,23 +134,30 @@ int smooth(int array[], int len) {
 }
 
 void callibrateSensors() {
-  /* Find the closest concurrent values of our two sensors while spinning in
-     a random direction and use that as a sensor normalizing value.
+  /* Spin and find the smallest delta between the two sensors at min or max, and use that as
+   * a built-in difference between the two.
    **/
-  int min_delta = MAX_SENSOR_READING;
+  int left_min = MAX_SENSOR_READING;
+  int right_min = MAX_SENSOR_READING;
+  int left_max = 0;
+  int right_max = 0;
+  
   float dir = random(3);
-  unsigned long callibration_until = millis() + DUR_CALLIBRATION_MSECS;
+  unsigned long callibrate_until = millis() + DUR_CALLIBRATION_MSECS;
   int spin_dir = (dir > 1.0)?DIR_LEFT:DIR_RIGHT;
-  while (millis() < callibration_until) {
+  while (millis() < callibrate_until) {
     spin(spin_dir);
     delay(SPIN_STEP_DELAY_MSECS);
-    spin(DIR_STOP);
+    drive(DIR_STOP);
     delay(SPIN_STEP_DELAY_MSECS);
     readSensors();
-    min_delta = min(s_delta, min_delta);
+    left_min = min(left_min, sensor_left);
+    left_max = max(left_max, sensor_left);
+    right_min = min(left_min, sensor_right);
+    right_max = max(left_max, sensor_right);
   }
-  drive(DIR_STOP);
-  sensor_normalization_delta = min_delta;
+  sensor_normalization_delta = min(abs(right_min - left_min), abs(right_max - left_max));
+  sensor_delta_threshold = s_max * (SENSOR_DELTA_THRESHOLD_PCT / 100) - sensor_normalization_delta;
 }
 
 void readSensors() {
@@ -163,16 +171,16 @@ void readSensors() {
   for (int s=0; s<SENSOR_SAMPLES; s++) {
     samples[s] = analogRead(sensorLPin);
   }
-  sl = smooth(samples, SENSOR_SAMPLES);
+  sensor_left = smooth(samples, SENSOR_SAMPLES);
 
   analogRead(sensorRPin);delay(10);
   for (int s=0; s<SENSOR_SAMPLES; s++) {
     samples[s] = analogRead(sensorRPin);
   }
-  sr = smooth(samples, SENSOR_SAMPLES);
+  sensor_right = smooth(samples, SENSOR_SAMPLES);
 
-  s_max = max(sl,sr);
-  s_min = min(sl,sr);
+  s_max = max(sensor_left, sensor_right);
+  s_min = min(sensor_left, sensor_right);
   s_delta = abs((s_max - s_min) - sensor_normalization_delta);
 }
 
@@ -199,11 +207,11 @@ void showSeekingLED() {
 void loop() {  
   readSensors();
 
-  if (s_delta > SENSOR_DELTA_THRESHOLD) {
-    drive((sl < sr)? DIR_RIGHT:DIR_LEFT);
+  if (s_delta > sensor_delta_threshold) {
+    drive((sensor_left < sensor_right)? DIR_RIGHT:DIR_LEFT);
     showSeekingLED();
   } else {
-    if (s_max < (s_highest - SENSOR_DELTA_THRESHOLD)) {
+    if (s_max < (s_highest - sensor_delta_threshold)) {
       drive(DIR_FWD);
       showSadLED();
     } else {
