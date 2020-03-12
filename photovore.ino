@@ -40,20 +40,17 @@ Adafruit_DotStar strip = Adafruit_DotStar(1, INTERNAL_DS_DATA, INTERNAL_DS_CLK, 
 #define SERVO_L_STOP SERVO_STOP
 #define SERVO_R_STOP SERVO_STOP
 
-#define SENSOR_DELTA_THRESHOLD_PCT 20
 #define SENSOR_DELTA_THRESHOLD 30
-
-#define HIGHEST_THRESHOLD SENSOR_DELTA_THRESHOLD
 
 #define SENSOR_SAMPLES 5
 
 #define MAX_SENSOR_READING 1023  // Used to seed sensor pair normalization
 
 // How long to spin while callibrating the sensor pair
-#define DUR_CALLIBRATION 1000
+#define DUR_CALLIBRATION_MSECS 2000
 
 // How long to pause between steps while spinning to normalize the sensor pair
-#define SPIN_STEP_DELAY_MS 15
+#define SPIN_STEP_DELAY_MSECS 15
 
 #define DIR_STOP 0
 #define DIR_RIGHT 1
@@ -62,7 +59,8 @@ Adafruit_DotStar strip = Adafruit_DotStar(1, INTERNAL_DS_DATA, INTERNAL_DS_CLK, 
 
 int sr, sl;
 int s_max, s_highest;
-int s_delta, s_change_pct;
+int s_min, s_lowest;
+int s_delta;
 int current_dir, last_dir;
 int sensor_normalization_delta;
 
@@ -70,7 +68,6 @@ void testRGBLED() {
   strip.setPixelColor(0, 0, 0, 0);  //off
   strip.show();
   delay(1000);
-  strip.setPixelColor(0, 0, 127, 127);  //cyan
   strip.show();
   delay(500);
   strip.setPixelColor(0, 127, 127, 0);  //yellow
@@ -95,7 +92,7 @@ void testServos() {
 
   RIGHT_SERVO.write(SERVO_R_STOP);
   LEFT_SERVO.write(SERVO_L_STOP);
-  delay(1000);
+  delay(2000);
 }
 
 void setup() {
@@ -141,17 +138,15 @@ void callibrateSensors() {
    **/
   int min_delta = MAX_SENSOR_READING;
   float dir = random(3);
-  unsigned long callibration_until = millis() + DUR_CALLIBRATION;
+  unsigned long callibration_until = millis() + DUR_CALLIBRATION_MSECS;
   int spin_dir = (dir > 1.0)?DIR_LEFT:DIR_RIGHT;
   while (millis() < callibration_until) {
     spin(spin_dir);
-    delay(SPIN_STEP_DELAY_MS);
+    delay(SPIN_STEP_DELAY_MSECS);
     spin(DIR_STOP);
-    delay(SPIN_STEP_DELAY_MS);
+    delay(SPIN_STEP_DELAY_MSECS);
     readSensors();
-    if (abs(s_delta) < abs(min_delta)) {
-      min_delta = s_delta;
-    }
+    min_delta = min(s_delta, min_delta);
   }
   drive(DIR_STOP);
   sensor_normalization_delta = min_delta;
@@ -177,8 +172,8 @@ void readSensors() {
   sr = smooth(samples, SENSOR_SAMPLES);
 
   s_max = max(sl,sr);
-  s_delta = (sl - sensor_normalization_delta) - sr;
-  s_change_pct = (float)abs(s_delta) / s_max * 100;
+  s_min = min(sl,sr);
+  s_delta = abs((s_max - s_min) - sensor_normalization_delta);
 }
 
 void showHappyLED() {
@@ -204,11 +199,11 @@ void showSeekingLED() {
 void loop() {  
   readSensors();
 
-  if ((abs(s_delta) > SENSOR_DELTA_THRESHOLD) && (s_change_pct > SENSOR_DELTA_THRESHOLD_PCT)) {
+  if (s_delta > SENSOR_DELTA_THRESHOLD) {
     drive((sl < sr)? DIR_RIGHT:DIR_LEFT);
     showSeekingLED();
   } else {
-    if (s_max < (s_highest - HIGHEST_THRESHOLD)) {
+    if (s_max < (s_highest - SENSOR_DELTA_THRESHOLD)) {
       drive(DIR_FWD);
       showSadLED();
     } else {
@@ -222,6 +217,7 @@ void loop() {
     }
   }
   s_highest = max(s_max, s_highest);
+  s_lowest = min(s_min, s_lowest);
 }
 
 void drive(int direction) {
