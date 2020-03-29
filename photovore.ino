@@ -22,7 +22,7 @@ Adafruit_DotStar strip = Adafruit_DotStar(1, INTERNAL_DS_DATA, INTERNAL_DS_CLK, 
 
 // Define these based on your servos and controller, the value to cause your servos 
 // to come to a full stop.
-#define SERVO_STOP 92
+#define SERVO_STOP 91
 
 #define SERVO_DELTA 10
 
